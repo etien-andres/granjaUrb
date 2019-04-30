@@ -1,0 +1,187 @@
+
+
+#include <FirebaseESP8266.h>
+#include <FirebaseESP8266HTTPClient.h>
+
+#include <BearSSLHelpers.h>
+#include <CertStoreBearSSL.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266WiFiAP.h>
+#include <ESP8266WiFiGeneric.h>
+#include <ESP8266WiFiMulti.h>
+#include <ESP8266WiFiScan.h>
+#include <ESP8266WiFiSTA.h>
+#include <ESP8266WiFiType.h>
+#include <WiFiClient.h>
+#include <WiFiClientSecure.h>
+#include <WiFiClientSecureAxTLS.h>
+#include <WiFiClientSecureBearSSL.h>
+#include <WiFiServer.h>
+#include <WiFiServerSecure.h>
+#include <WiFiServerSecureAxTLS.h>
+#include <WiFiServerSecureBearSSL.h>
+#include <WiFiUdp.h>
+
+unsigned int localPort = 2390;      // local port to listen for UDP packets
+
+/* Don't hardwire the IP address or we won't get the benefits of the pool.
+ *  Lookup the IP address for the host name instead */
+IPAddress timeServer(129, 6, 15, 28); // time.nist.gov NTP server
+IPAddress timeServerIP; // time.nist.gov NTP server address
+const char* ntpServerName = "time.nist.gov";
+
+const int NTP_PACKET_SIZE = 48; // NTP time stamp is in the first 48 bytes of the message
+
+byte packetBuffer[ NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
+
+// A UDP instance to let us send and receive packets over UDP
+WiFiUDP udp;
+
+
+
+
+
+
+
+
+#ifndef STASSID
+#define STASSID "Totalplay-4D9C"
+#define STAPSK  "4D9C7F594w4EDpcE"
+#define FIREBASE_HOST "https://granja-urbana-acuaponica.firebaseio.com"
+#define FIREBASE_AUTH "KbkL0KhwK4s1YU16Pm0YrP7JS4QkmeUFTvHQHUdw"
+#endif
+
+ char* ssid     = STASSID;
+ char* password = STAPSK;
+
+const char* host = "192.168.1.1";
+const uint16_t port = 3000;
+int LED=16,VENT1=D1,VENT2=D2,BOMBA=D3,PELT=D6;
+int LEDWifi=2;
+float tempC; // Variable para almacenar el valor obtenido del sensor (0 a 1023)
+int pinLM35 = A0;
+
+FirebaseData firebaseData;
+unsigned long sendDataPrevMillis = 0;
+
+unsigned long sendMessagePrevMillis = 0;
+
+uint16_t count = 0;
+
+void setup() {
+  Serial.begin(115200);
+   pinMode(VENT1,OUTPUT);
+      pinMode(VENT2,OUTPUT);
+
+   pinMode(BOMBA,OUTPUT);
+   pinMode(PELT,OUTPUT);
+
+
+pinMode(LED,OUTPUT);
+pinMode(LEDWifi,OUTPUT);
+  // We start by connecting to a WiFi network
+    WiFi.mode(WIFI_STA);
+
+  WiFi.begin(ssid,password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.println();
+  Serial.print("Wait for WiFi... ");
+
+ 
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+//   udp.begin(localPort);
+//  Serial.print("Local port: ");
+//  Serial.println(udp.localPort());
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+  delay(500);
+}
+
+
+void loop()
+{
+ 
+ digitalWrite(LEDWifi,HIGH);
+ if(Firebase.getInt(firebaseData,"Control/AireF")){
+  int a=firebaseData.intData();
+  Serial.print("Aire Frio ");
+  Serial.println(a);
+  if(a==1){
+    digitalWrite(VENT1,HIGH);
+    }
+  if(a==0){
+    digitalWrite(VENT1,LOW);
+
+  }
+  }
+  else {
+    Serial.println(firebaseData.errorReason());
+    }
+delay(500);
+if(Firebase.getInt(firebaseData,"Control/AireC")){
+    int a=firebaseData.intData();
+    Serial.print("Aire Caliente ");
+    Serial.println(a);
+    if(a==1){
+       digitalWrite(VENT2,HIGH);
+        
+  
+    }
+    if(a==0){
+        digitalWrite(VENT2,LOW);
+      
+  
+    }
+  }
+  else {
+    Serial.println(firebaseData.errorReason());
+    }
+
+delay(500);
+    if(Firebase.getInt(firebaseData,"Control/Bomba")){
+  int a=firebaseData.intData();
+  Serial.print("Bomba ");
+  Serial.println(a);
+  if(a==1)digitalWrite(BOMBA,HIGH);
+  if(a==0)digitalWrite(BOMBA,LOW);
+  }
+  else {
+    Serial.println(firebaseData.errorReason());
+    }
+    delay(500);
+     if(Firebase.getInt(firebaseData,"Control/Pelt")){
+  int a=firebaseData.intData();
+  Serial.print("PELT ");
+  Serial.println(a);
+  if(a==1)digitalWrite(PELT,HIGH);
+  if(a==0)digitalWrite(PELT,LOW);
+  }
+  else {
+    Serial.println(firebaseData.errorReason());
+    }
+      delay(500);
+  tempC = analogRead(pinLM35); 
+   
+  // Calculamos la temperatura con la fórmula
+  tempC = (3.3 * tempC * 100.0)/1023.0; 
+
+  // Envia el dato al puerto serial
+  Serial.println(tempC);
+  String tem=String(tempC);
+  String jsonStr = "{\"temp\":\""+tem+"\"}";
+  
+  Firebase.pushJSON(firebaseData,"Historicos/Estado/Temp",jsonStr );
+  digitalWrite(LEDWifi,LOW);
+  
+  Firebase.updateNode(firebaseData,"estadoActual", jsonStr);
+   delay(3000);
+
+  
+}
