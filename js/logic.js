@@ -2,37 +2,38 @@
 
 
 
-//changetemp(55);
-while (true){
-    setTimeout( function () {
-    firebase.database().goOnline();
-    firebase.database().ref('estadoActual/tempno').on('value',function (snapshot) {
-        console.log(snapshot.val());
-    });
 
-        $.get("http://localhost:3000", function(data, status){
-            document.getElementById("tempe").innerText=data;
-        });
-    }),5000;
-}
+firebase.database().goOnline();
+firebase.database().ref('estadoActual/temp').once('value',function (snapshot) {
+    console.log(snapshot.val());
+    document.getElementById("tempe").innerText=snapshot.val();
+
+});
+
+
+
 
 
 
 function changetemp(temp) {
-    // A post entry.
     var temperaturas = {
+        AireF:0,
+        AireC:0,
+        Bomba:0,
+        Pelt:0,
         tempDesired: temp,
         tempDesiredMax: temp+10,
     };
 
-    // Get a key for a new Post.
 
-    // Write the new post's data simultaneously in the posts list and the user's post list.
     var updates = {};
     updates['/Control/'] = temperaturas;
-    //updates['/user-posts/' + uid + '/' + newPostKey] = postData;
     return firebase.database().ref().update(updates);
-}//console.log(estado);
+}
+setTimeout(function () {
+   // console.log("hola");
+    location.reload();
+},8000);
 
 
 
