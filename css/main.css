@@ -1,5 +1,13 @@
-#mainc{
-    margin-top: 62px;
-    background-color: #7abaff;
-    border-radius: 5px;
+.texto{
+    margin: 80px;
 }
+.imagen    > img{
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+}
+.otra{
+    margin-top: 60px;
+}
+
+

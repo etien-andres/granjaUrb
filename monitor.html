@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+          />
     <title>Acuaponic IOT</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/main.css">
@@ -10,6 +11,24 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.4.0.min.js"
+            integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
+            crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.11.1/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyDTYKOwugds4fgNN28hQzRYcSpzysrnnZg",
+            authDomain: "granja-urbana-acuaponica.firebaseapp.com",
+            databaseURL: "https://granja-urbana-acuaponica.firebaseio.com",
+            projectId: "granja-urbana-acuaponica",
+            storageBucket: "granja-urbana-acuaponica.appspot.com",
+            messagingSenderId: "176077788706"
+        };
+        firebase.initializeApp(config);
+    </script>
+
     <style type="text/css">
         .h1 {
             margin: 50px;
@@ -17,6 +36,7 @@
         }
     </style>
 
+    <script src="js/logic.js"></script>
 
 </head>
 <body>
@@ -31,14 +51,15 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item ">
                     <a class="nav-link" href="index.html">Home
+
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="monitor.html">Monitor</a>
-                </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Control
+                    <a class="nav-link" href="#">Monitor
                         <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="control.html">Control</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Graph</a>
@@ -53,9 +74,12 @@
 
 
 
-<div class="otra" >
-<p > Hola perro</p>
+<div class=" justify-content-center  container otra">
+    <p>
+    <h1 class="dato_temp"> Temperatura:<h1 id="tempe"></h1></h1>
+    </p>
 </div>
+
 
 </body>
 </html>
