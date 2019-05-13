@@ -8,6 +8,16 @@
 }
 .otra{
     margin-top: 60px;
+
 }
 
 
+.tabla_valores{
+    max-width: 50%;
+    margin: auto auto;
+}
+.tituloMon{
+    margin-left: 33%;
+    margin-top: 100px;
+    margin-bottom: 50px;
+}

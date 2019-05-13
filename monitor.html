@@ -2,8 +2,7 @@
 <html>
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
-          />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Acuaponic IOT</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/main.css">
@@ -11,8 +10,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script
-            src="https://code.jquery.com/jquery-3.4.0.min.js"
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js"
             integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
             crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/5.11.1/firebase.js"></script>
@@ -50,7 +48,7 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item ">
-                    <a class="nav-link" href="index.html">Home
+                    <a class="nav-link" href="index.html">Inicio
 
                     </a>
                 </li>
@@ -62,10 +60,10 @@
                     <a class="nav-link" href="control.html">Control</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Graph</a>
+                    <a class="nav-link" href="#">Gráfico</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Contact</a>
+                    <a class="nav-link" href="#">Contacto</a>
                 </li>
             </ul>
         </div>
@@ -75,9 +73,43 @@
 
 
 <div class=" justify-content-center  container otra">
-    <p>
-    <h1 class="dato_temp"> Temperatura:<h1 id="tempe"></h1></h1>
-    </p>
+    <h2 class="tituloMon">Estado Actual del Sistema</h2>
+
+
+    <table class="tabla_valores table table-bordered table-hover ">
+        <thead class="thead-dark">
+
+        <tr>
+            <th scope="col">Sensor (variable)</th>
+            <th scope="col">Valor</th>
+        </tr>
+        </thead>
+        <tr>
+            <td scope="row" class="table-info" >Temperatura en el ambiente </td>
+            <td scope="row" id="tempe" ></td>
+        </tr>
+        <tr>
+            <td scope="row" class=" table-info">Nivel del Agua:</td>
+            <td scope="row" id="nivel" ></td>
+        </tr>
+        <tr>
+            <td scope="row" class="table-info">Temperatura del Agua:</td>
+            <td id="agua" scope="row" ></td>
+        </tr>
+        <tr>
+            <td scope="row" class="table-info">Humedad relativa en el ambiente:</td>
+            <td id="humedad" scope="row" ></td>
+        </tr>
+        <tr>
+            <td scope="row" class="table-info">Humedad en la cama de agua:</td>
+            <td id="humedadC" scope="row" ></td>
+        </tr>
+
+    </table>
+
+
+
+
 </div>
 
 
