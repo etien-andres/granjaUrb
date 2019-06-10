@@ -1,4 +1,8 @@
+#include <DallasTemperature.h>
+#include <OneWire.h>
+#include <DHTesp.h>
 
+#include <Adafruit_Sensor.h>
 
 #include <FirebaseESP8266.h>
 #include <FirebaseESP8266HTTPClient.h>
@@ -21,11 +25,15 @@
 #include <WiFiServerSecureAxTLS.h>
 #include <WiFiServerSecureBearSSL.h>
 #include <WiFiUdp.h>
+ 
+
+ 
+// Inicializamos el sensor DHT11
+DHTesp dht;
 
 unsigned int localPort = 2390;      // local port to listen for UDP packets
 
-/* Don't hardwire the IP address or we won't get the benefits of the pool.
- *  Lookup the IP address for the host name instead */
+
 IPAddress timeServer(129, 6, 15, 28); // time.nist.gov NTP server
 IPAddress timeServerIP; // time.nist.gov NTP server address
 const char* ntpServerName = "time.nist.gov";
@@ -37,8 +45,8 @@ byte packetBuffer[ NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing pack
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP udp;
 
-
-
+OneWire oneWire(D7);
+DallasTemperature sensors(&oneWire);
 
 
 
@@ -56,10 +64,10 @@ WiFiUDP udp;
 
 const char* host = "192.168.1.1";
 const uint16_t port = 3000;
-int LED=16,VENT1=D1,VENT2=D2,BOMBA=D3,PELT=D6;
+int LED=16,VENT1=D1,VENT2=D2,BOMBA=D3,PELT=D4; 
 int LEDWifi=2;
-float tempC; // Variable para almacenar el valor obtenido del sensor (0 a 1023)
-int pinLM35 = A0;
+float tempC,hum; // Variable para almacenar el valor obtenido del sensor (0 a 1023)
+int humedadCama = A0;
 
 FirebaseData firebaseData;
 unsigned long sendDataPrevMillis = 0;
@@ -72,11 +80,17 @@ void setup() {
   Serial.begin(115200);
    pinMode(VENT1,OUTPUT);
       pinMode(VENT2,OUTPUT);
+      //pinMode(D8,INPUT);
+    dht.setup(D8, DHTesp::DHT11);
 
    pinMode(BOMBA,OUTPUT);
    pinMode(PELT,OUTPUT);
 
+   sensors.begin();
+  
 
+ 
+  
 pinMode(LED,OUTPUT);
 pinMode(LEDWifi,OUTPUT);
   // We start by connecting to a WiFi network
@@ -107,6 +121,8 @@ pinMode(LEDWifi,OUTPUT);
 
 void loop()
 {
+    //delay(dht.getMinimumSamplingPeriod());
+
  
  digitalWrite(LEDWifi,HIGH);
  if(Firebase.getInt(firebaseData,"Control/AireF")){
@@ -124,14 +140,13 @@ void loop()
   else {
     Serial.println(firebaseData.errorReason());
     }
-delay(500);
+delay(100);
 if(Firebase.getInt(firebaseData,"Control/AireC")){
     int a=firebaseData.intData();
     Serial.print("Aire Caliente ");
     Serial.println(a);
     if(a==1){
        digitalWrite(VENT2,HIGH);
-        
   
     }
     if(a==0){
@@ -144,7 +159,7 @@ if(Firebase.getInt(firebaseData,"Control/AireC")){
     Serial.println(firebaseData.errorReason());
     }
 
-delay(500);
+delay(100);
     if(Firebase.getInt(firebaseData,"Control/Bomba")){
   int a=firebaseData.intData();
   Serial.print("Bomba ");
@@ -155,7 +170,7 @@ delay(500);
   else {
     Serial.println(firebaseData.errorReason());
     }
-    delay(500);
+    delay(100);
      if(Firebase.getInt(firebaseData,"Control/Pelt")){
   int a=firebaseData.intData();
   Serial.print("PELT ");
@@ -166,22 +181,77 @@ delay(500);
   else {
     Serial.println(firebaseData.errorReason());
     }
-      delay(500);
-  tempC = analogRead(pinLM35); 
-   
-  // Calculamos la temperatura con la fórmula
-  tempC = (3.3 * tempC * 100.0)/1023.0; 
-
-  // Envia el dato al puerto serial
-  Serial.println(tempC);
-  String tem=String(tempC);
-  String jsonStr = "{\"temp\":\""+tem+"\"}";
+      delay(100);
   
+
+  float h = dht.getHumidity();
+  // Leemos la temperatura en grados centígrados (por defecto)
+  float t = dht.getTemperature();
+        
+  hum=h;
+  tempC = t;
+     Serial.println(tempC);
+     Serial.println(hum);
+
+  
+  String tem=String(tempC);
+  String hume=String(h);
+  String jsonStr = "{\"temp\":\""+tem+"\"}";
+   Firebase.updateNode(firebaseData,"estadoActual", jsonStr);
+
   Firebase.pushJSON(firebaseData,"Historicos/Estado/Temp",jsonStr );
   digitalWrite(LEDWifi,LOW);
+          delay(100);
+  digitalWrite(LEDWifi,HIGH);
+
   
+   jsonStr = "{\"Humedad\":\""+hume+"\"}";
+  
+  Firebase.pushJSON(firebaseData,"Historicos/Estado/Hum",jsonStr );
+  digitalWrite(LEDWifi,LOW);
+          delay(100);
+  digitalWrite(LEDWifi,HIGH);
   Firebase.updateNode(firebaseData,"estadoActual", jsonStr);
-   delay(3000);
+
+  digitalWrite(LEDWifi,LOW);
+            delay(100);
+
+    digitalWrite(LEDWifi,HIGH);
+
+    
+  sensors.requestTemperatures();
+     Serial.println(sensors.getTempCByIndex(0));
+     String aguaS=(String)sensors.getTempCByIndex(0);
+ digitalWrite(LEDWifi,LOW);
+          delay(100);
+  digitalWrite(LEDWifi,HIGH);
+  jsonStr = "{\"temperatura agua\":\""+aguaS+"\"}";
+  
+ Firebase.pushJSON(firebaseData,"Historicos/Estado/Agua",jsonStr );
+ digitalWrite(LEDWifi,LOW);
+ delay(100);
+ digitalWrite(LEDWifi,HIGH);
+ Firebase.updateNode(firebaseData,"estadoActual", jsonStr);
+ digitalWrite(LEDWifi,LOW);
+  delay(100);
+  digitalWrite(LEDWifi,HIGH);
+  float humedadC=analogRead(humedadCama);
+  humedadC= (humedadC)/1024.0*100; 
+  humedadC=100-humedadC;
+  Serial.println(humedadC);
+   String hcS=(String)humedadC;
+   jsonStr = "{\"HumedadCam\":\""+hcS+"\"}";
+  
+  Firebase.pushJSON(firebaseData,"Historicos/Estado/HumedadCam",jsonStr );
+  Firebase.updateNode(firebaseData,"estadoActual", jsonStr);
+
+ digitalWrite(LEDWifi,LOW);
+ delay(100);
+ digitalWrite(LEDWifi,HIGH);
+  
+
+  
+   delay(1500);
 
   
 }
