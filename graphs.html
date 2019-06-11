@@ -2,8 +2,11 @@
 <html>
 
 <head>
+
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Acuaponic IOT</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -36,8 +39,6 @@
             text-align: justify;
         }
     </style>
-    <script src="js/control.js"></script>
-
 
 </head>
 <body>
@@ -57,12 +58,12 @@
                 <li class="nav-item">
                     <a class="nav-link" href="monitor.html">Monitor</a>
                 </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Control
-                        <span class="sr-only">(current)</span></a>
-                </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="graphs.html">Gráficos</a>
+                    <a class="nav-link" href="control.html">Control
+                        </a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Gráficos <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Contacto</a>
@@ -76,43 +77,32 @@
 
 <div class="otra" >
 
-    <h2 class="tituloMon">Controles </h2>
-    <table class="tabla_valores table table-bordered table-hover ">
-        <thead class="thead-dark">
+    <h2 class="tituloMon">Graficos</h2>
+    <h3 class="tit2">Temperatura</h3>
 
-        <tr>
-            <th scope="col">Actuador</th>
-            <th scope="col">Valor</th>
-        </tr>
-        </thead>
-        <tr>
-            <td scope="row" class="table-info" >Bomba de agua</td>
-            <td scope="row" id="tempe" >
-                <input id="bomba"  type="checkbox" data-toggle="toggle"  data-on="Encendido" data-off="Apagado" data-onstyle="success" data-offstyle="danger" >
-            </td>
-        </tr>
-        <tr>
-            <td scope="row" class=" table-info">Aire Frio:</td>
-            <td scope="row" id="nivel" >
-                <input id="aFrio"  type="checkbox" data-toggle="toggle"  data-on="Encendido" data-off="Apagado" data-onstyle="success" data-offstyle="danger" >
+    <div id="temp" style="width:900px;height:500px;"></div>
 
-            </td>
-        </tr>
-        <tr>
-            <td scope="row" class="table-info">Aire Caliente:</td>
-            <td id="agua" scope="row" >
-                <input id="acalient"  type="checkbox" data-toggle="toggle"  data-on="Encendido" data-off="Apagado" data-onstyle="success" data-offstyle="danger" >
+    <h3 class="tit2">Temperatura del Agua</h3>
 
-            </td>
-        </tr>
-        <tr>
-            <td scope="row" class="table-info">Temperatura deseada °C</td>
-            <td id="humedad" scope="row" >
-                <input id="tempdesi" class="form-control" type="number" style="width: 75px">
-            </td>
-        </tr>
+    <div id="tester" style="width:900px;height:500px;"></div>
 
-    </table>
+    <h3 class="tit2">Humedad</h3>
+
+    <div id="hum" style="width:900px;height:500px;"></div>
+
+    <h3 class="tit2">Humedad en la cama de crecimiento</h3>
+
+    <div id="humC" style="width:900px;height:500px;"></div>
+
+
+
+
+
+
+    <script src="js/graphs.js"></script>
+
+
+
 </div>
 
 </body>
